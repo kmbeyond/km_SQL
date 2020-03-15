@@ -1,0 +1,17 @@
+
+
+
+#Just add a row# to each record (Not using ranking analytical functions)
+SET @rank=0;
+select @rank:=@rank+1 AS rownum, inv_dt, cust_id AS amount from kmdb.invoice;
+
++--------+------------+--------+
+| rownum | inv_dt     | amount |
++--------+------------+--------+
+|      1 | 2018-01-03 |      2 |
+|      2 | 2018-01-04 |      3 |
+|      3 | 2018-01-05 |      3 |
+|      4 | 2018-01-05 |      4 |
+|      5 | 2018-01-05 |      1 |
++--------+------------+--------+
+
