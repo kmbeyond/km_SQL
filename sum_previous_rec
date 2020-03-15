@@ -1,0 +1,48 @@
+
+mysql> select * from kmdb.invoice;
++------+------------+---------+
+| id   | inv_dt     | cust_id |
++------+------------+---------+
+|    1 | 2018-01-03 |       2 |
+|    2 | 2018-01-04 |       3 |
+|    3 | 2018-01-05 |       3 |
+|    4 | 2018-01-05 |       4 |
+|    5 | 2018-01-05 |       1 |
++------+------------+---------+
+
+--sum previous record data
+SELECT a.id, a.inv_dt, a.cust_id, b.id id_prev, a.cust_id+coalesce(b.cust_id,0) as sum
+ FROM kmdb.invoice a
+   left join kmdb.invoice b ON a.id-1=b.id
+ order by a.id;
+
++------+------------+---------+---------+------+
+| id   | inv_dt     | cust_id | id_prev | sum  |
++------+------------+---------+---------+------+
+|    1 | 2018-01-03 |       2 |    NULL |    2 |
+|    2 | 2018-01-04 |       3 |       1 |    5 |
+|    3 | 2018-01-05 |       3 |       2 |    6 |
+|    4 | 2018-01-05 |       4 |       3 |    7 |
+|    5 | 2018-01-05 |       1 |       4 |    5 |
++------+------------+---------+---------+------+
+
+
+--sum all previous records data
+
+SELECT a.id, a.inv_dt, a.cust_id, sum(a.cust_id+coalesce(b.cust_id,0)) as sum
+ FROM kmdb.invoice a
+  left join kmdb.invoice b ON a.id>b.id
+ GROUP BY a.id, a.inv_dt, a.cust_id
+ order by a.id;
+
++------+------------+---------+------+
+| id   | inv_dt     | cust_id | sum  |
++------+------------+---------+------+
+|    1 | 2018-01-03 |       2 |    2 |
+|    2 | 2018-01-04 |       3 |    5 |
+|    3 | 2018-01-05 |       3 |   11 |
+|    4 | 2018-01-05 |       4 |   20 |
+|    5 | 2018-01-05 |       1 |   16 |
++------+------------+---------+------+
+
+
