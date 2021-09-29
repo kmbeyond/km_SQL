@@ -1,0 +1,17 @@
+
+
+SELECT pin_flag
+  ,count(1) AS cnt
+  ,CAST( ((count(1)/(sum(count(1)) over ()))*100) AS DECIMAL(5,2)) AS pct
+ FROM kmdb.big_data_test GROUP BY pin_flag;
+
+
++-----------+--------+--------+--+
+| pin_flag  |  cnt   |  pct   |
++-----------+--------+--------+--+
+| SIG       | 97012  | 45.96  |
+| PIN       | 20921  | 9.91   |
+| AUTH      | 93157  | 44.13  |
++-----------+--------+--------+--+
+
+
