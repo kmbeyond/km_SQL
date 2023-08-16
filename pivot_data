@@ -1,1 +1,47 @@
 
+----------------pivot
+-----------manual
+--using CASE
+WITH
+test_data AS (
+ SELECT 1 as id, 'Q1' as qtr, 100 as total UNION ALL
+ SELECT 1, 'Q2' as qtr, 50 UNION ALL
+ SELECT 2, 'Q1' as qtr, 90
+)
+select id, sum(case when qtr='Q1' THEN total ELSE 0 END) as q1_total, sum(case when qtr='Q2' THEN total ELSE 0 END) as q2_total FROM test_data
+GROUP BY id
+;
+
++----+----------+----------+
+| id | q1_total | q2_total |
++----+----------+----------+
+| 2  | 90       | 0        |
+| 1  | 100      | 50       |
++----+----------+----------+
+
+
+--using COLLECT_SET
+WITH
+test_data AS (
+ SELECT 1 as id, 'Q1' as qtr, 100 as total UNION ALL
+ SELECT 1, 'Q2' as qtr, 50 UNION ALL
+ SELECT 2, 'Q1' as qtr, 90
+)
+,data_grps AS (
+ SELECT id,
+  CASE WHEN qtr='Q1' THEN total END AS q1,
+  CASE WHEN qtr='Q2' THEN total END AS q2
+  FROM test_data
+)
+SELECT id, COLLECT_SET(q1)[0] AS q1_total, COLLECT_SET(q2)[0] AS q2_total FROM data_grps GROUP BY id;
++-----+-----------+-----------+
+| id  | q1_total  | q2_total  |
++-----+-----------+-----------+
+| 1   | 100       | 50        |
+| 2   | 90        | NULL      |
++-----+-----------+-----------+
+
+
+----------------built-in function
+
+
