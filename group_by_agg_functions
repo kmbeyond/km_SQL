@@ -1,0 +1,18 @@
+
+-----agg using GROUP BY & without GROUP BY
+WITH test_data AS (
+ SELECT 1 as id, 100 as total UNION ALL
+ SELECT 1, 50 UNION ALL
+ SELECT 2, 90
+)
+--SELECT id, sum(total) AS id_total from test_data GROUP BY id
+SELECT distinct id, id_total FROM ( SELECT id, sum(total) over (partition by id) AS id_total from test_data )tmp
+;
++----+----------+
+| id | id_total |
++----+----------+
+| 2  | 90       |
+| 1  | 150      |
++----+----------+
+
+
