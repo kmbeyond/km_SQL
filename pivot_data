@@ -19,6 +19,24 @@ GROUP BY id
 | 1  | 100      | 50       |
 +----+----------+----------+
 
+--using multiple CTE expressions
+WITH
+test_data AS (
+ SELECT 1 as id, 'Q1' as qtr, 100 as total UNION ALL
+ SELECT 1, 'Q2' as qtr, 50 UNION ALL
+ SELECT 2, 'Q1' as qtr, 90 UNION ALL
+ SELECT 3, 'Q3' as qtr, 70
+)
+,q1 AS (SELECT id, sum(total) as q1_total FROM test_data WHERE qtr='Q1' GROUP BY id)
+,q2 AS (SELECT id, sum(total) as q2_total FROM test_data WHERE qtr='Q2' GROUP BY id)
+,q3 AS (SELECT id, sum(total) as q3_total FROM test_data WHERE qtr='Q3' GROUP BY id)
+SELECT distinct A.id, ifnull(q1.q1_total,0) as q1_total, q2.q2_total, q3.q3_total
+ FROM test_data A
+  LEFT JOIN q1 ON q1.id=A.id
+  LEFT JOIN q2 ON q1.id=A.id
+  LEFT JOIN q3 ON q3.id=A.id
+;
+
 
 --using COLLECT_SET
 WITH
